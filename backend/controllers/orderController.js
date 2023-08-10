@@ -18,12 +18,11 @@ const addOrderItems = asyncHandler(async (req, res) => {
   if (orderItems && orderItems.length === 0) {
     res.status(400);
     throw new Error("No order items");
-    return;
   } else {
     const order = new Order({
-      orderItems: orderItems.map((item) => ({
-        ...item,
-        product: item.product._id,
+      orderItems: orderItems.map((x) => ({
+        ...x,
+        product: x._id,
         _id: undefined,
       })),
       user: req.user._id,
