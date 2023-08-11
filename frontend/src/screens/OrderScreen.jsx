@@ -32,36 +32,36 @@ const OrderScreen = () => {
 
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
-    const {
-      data: paypal,
-      isLoading: loadingPayPal,
-      error: errorPayPal,
-    } = useGetPayPalClientIdQuery();
+  const {
+    data: paypal,
+    isLoading: loadingPayPal,
+    error: errorPayPal,
+  } = useGetPayPalClientIdQuery();
 
-   useEffect(() => {
-     // check if errorPayPal and loadingPayPal false and paypal.clientId exist
-     if (!errorPayPal && !loadingPayPal && paypal.clientId) {
-       // then create function to  load paypal script
-       const loadPaypalScript = async () => {
-         // read paypal documentation
-         paypalDispatch({
-           type: "resetOptions",
-           value: {
-             "client-id": paypal.clientId,
-             currency: "USD",
-           },
-         });
-         paypalDispatch({ type: "setLoadingStatus", value: "pending" });
-       };
-       if (order && !order.isPaid) {
-         // if the order exist but order is not paid - want to load the script
-         if (!window.paypal) {
-           // check if script not already loaded
-           loadPaypalScript(); // if not then load it
-         }
-       }
-     }
-   }, [order, paypal, paypalDispatch, loadingPayPal, errorPayPal]);
+  useEffect(() => {
+    // check if errorPayPal and loadingPayPal false and paypal.clientId exist
+    if (!errorPayPal && !loadingPayPal && paypal.clientId) {
+      // then create function to  load paypal script
+      const loadPaypalScript = async () => {
+        // read paypal documentation
+        paypalDispatch({
+          type: "resetOptions",
+          value: {
+            "client-id": paypal.clientId,
+            currency: "USD",
+          },
+        });
+        paypalDispatch({ type: "setLoadingStatus", value: "pending" });
+      };
+      if (order && !order.isPaid) {
+        // if the order exist but order is not paid - want to load the script
+        if (!window.paypal) {
+          // check if script not already loaded
+          loadPaypalScript(); // if not then load it
+        }
+      }
+    }
+  }, [order, paypal, paypalDispatch, loadingPayPal, errorPayPal]);
 
   function onApprove(data, actions) {
     return actions.order.capture().then(async function (details) {
@@ -76,12 +76,12 @@ const OrderScreen = () => {
   }
 
   // TESTING ONLY! REMOVE BEFORE PRODUCTION
-//   async function onApproveTest() {
-//     await payOrder({ orderId, details: { payer: {} } });
-//     refetch();
+  //   async function onApproveTest() {
+  //     await payOrder({ orderId, details: { payer: {} } });
+  //     refetch();
 
-//     toast.success('Order is paid');
-//   }
+  //     toast.success('Order is paid');
+  //   }
 
   function onError(err) {
     toast.error(err.message);
@@ -102,8 +102,13 @@ const OrderScreen = () => {
   }
 
   const deliverHandler = async () => {
-    await deliverOrder(orderId);
-    refetch();
+    try {
+      await deliverOrder(orderId);
+      refetch();
+      toast.success("Order is delivered");
+    } catch (error) {
+      toast.error(error?.data?.message || error.error);
+    }
   };
 
   return isLoading ? (
