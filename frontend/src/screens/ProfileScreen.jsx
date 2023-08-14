@@ -8,7 +8,8 @@ import Message from "../components/Message";
 import { FaTimes } from "react-icons/fa";
 import { useProfileMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
-import { orderApiSlice, useGetMyOrdersQuery } from "../slices/ordersApiSlice";
+import { useGetMyOrdersQuery } from "../slices/ordersApiSlice";
+import Meta from "../components/Meta";
 
 const ProfileScreen = () => {
   const [name, setName] = useState("");
@@ -52,6 +53,7 @@ const ProfileScreen = () => {
   return (
     <Row>
       <Col md={3}>
+        <Meta title={`${userInfo.name} | ProShop`} />
         <h2>User Profile</h2>
 
         <Form onSubmit={submitHandler}>
