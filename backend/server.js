@@ -10,7 +10,7 @@ import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8000;
 
 connectDB();
 
@@ -18,10 +18,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // to access req.cookies
-
-app.get("/", (req, res) => {
-  res.send("Server is ready");
-});
 
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
@@ -34,6 +30,21 @@ app.get("/api/config/paypal", (req, res) =>
 
 const __dirname = path.resolve(); // current directory
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+
+if (process.env.NODE_ENV === "production") {
+  // serve static assets if in production
+  app.use(express.static(path.join(__dirname, "/frontend/build")));
+
+  // serve index.html if route is not recognized
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"))
+  );
+} else {
+  // serve static assets if in development
+  app.get("/", (req, res) => {
+    res.send("API is running...");
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);
