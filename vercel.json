@@ -8,7 +8,7 @@
       }
     },
     {
-      "src": "backend/server.js",  // or your entry point for the backend
+      "src": "backend/server.js",
       "use": "@vercel/node"
     }
   ],
